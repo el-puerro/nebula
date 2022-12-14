@@ -1,17 +1,18 @@
 TARGET := $(shell pwd)/tools/cross/bin/i686-elf-
 
-SRC_DIR := sources/kernel/src
-INC_DIR := sources/kernel/include
+SRC_DIR := $(shell pwd)/sources/kernel/src
+INC_DIR := $(shell pwd)/sources/kernel/include
 PROJDIRS := $(SRC_DIR) $(INC_DIR)
-BUILD_DIR := build
-ISO_DIR := isodir
+BUILD_DIR := $(shell pwd)/build
+ISO_DIR := $(shell pwd)/isodir
 
-C_FILES := $(shell find $(PROJDIRS) -type f -name "\*.c")
-HDR_FILES := $(shell find $(PROJDIRS) -type f -name "\*.h")
-ASM_FILES := $(shell find $(PROJDIRS) -type f -name "\*.asm")
-LD_FILE := $(shell find $(PROJDIRS) -type f -name "\*.ld")
+C_FILES := $(shell find $(SRC_DIR) -type f -name "*.c")
+HDR_FILES := $(shell find $(SRC_DIR) -type f -name "*.h")
+ASM_FILES := $(shell find $(SRC_DIR) -type f -name "*.asm")
+LD_FILE := $(SRC_DIR)/linker.ld #$(shell find $(SRC_DIR) -type f -name "\*.ld")
 SRC_FILES := $(C_FILES) $(ASM_FILES)
-OBJFILES := $(patsubst %.c,%.o,$(SRC_FILES))
+OBJFILES := $(patsubst %.c,%.o,$(C_FILES))
+ASMOBJFILES := $(patsubst %.asm,%.o,$(ASM_FILES))
 ALLFILES := $(C_FILES) $(HDR_FILES) $(ASM_FILES) $(LD_FILE)
 
 CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
@@ -27,23 +28,28 @@ AS := nasm
 
 all: nebula.iso
 
-nebula.iso: $(ISO_DIR)/boot/nebula.bin $(ISO_DIR)/boot/grub/grub.cfg
-	grub-mkrescue -o $(BUILD_DIR)/$@ $(ISODIR)
+nebula.iso: nebula.bin
+	grub-mkrescue -o $@ isodir
 
-nebula.bin: $(OBJFILES)
-	$(CC) -T $(LD_FILE) -o $(ISO_DIR)/boot/nebula.bin $(LDFLAGS) $(OBJFILES)
+nebula.bin: cbuild asmbuild #$(OBJFILES)
+	$(CC) -T $(LD_FILE) -o $(ISO_DIR)/boot/nebula.bin $(OBJFILES) $(ASMOBJFILES) $(LDFLAGS) 
 
-%.o: %.c
-	$(CC) -c $< -0 $@ $(CFLAGS)
+#$(OBJFILES): $(C_FILES)
+#%.o: %.c
+cbuild: 
+	$(CC) $(INCLUDE) -c $(C_FILES) -o $(OBJFILES) $(CFLAGS) 
 
-%.o: %.asm
-	$(AS) $(ASFLAGS) -c $< -o $@
+#$(ASMOBJFILES): $(ASM_FILES)
+#%.o: %.asm
+asmbuild:
+	$(AS) $(ASFLAGS) $(ASM_FILES) -o $(ASMOBJFILES)
 
 run: nebula.iso
-	qemu-system-i386 -cdrom $(BUILD_DIR)/nebula.iso
+	qemu-system-i386 -cdrom nebula.iso
 
 clean: 
-	-@(RM) $(wildcard $(OBJFILES) $(BUILD_DIR) nebula.bin)
+	rm -rf build/ isodir/boot/nebula.bin nebula.iso
+	$(RM) $(OBJFILES) $(ASMOBJFILES)
 
 todo:
-	-@for file in $(ALLFILES:Makefile=); do fgrep -H -e TODO -e FIXME $$file; done; true
+	$(shell bash todo.sh)
