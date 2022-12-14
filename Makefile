@@ -12,6 +12,7 @@ ASM_FILES := $(shell find $(PROJDIRS) -type f -name "\*.asm")
 LD_FILE := $(shell find $(PROJDIRS) -type f -name "\*.ld")
 SRC_FILES := $(C_FILES) $(ASM_FILES)
 OBJFILES := $(patsubst %.c,%.o,$(SRC_FILES))
+ALLFILES := $(C_FILES) $(HDR_FILES) $(ASM_FILES) $(LD_FILE)
 
 CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 LDFLAGS := -ffreestanding -O2 -nostdlib -lgcc
@@ -43,3 +44,6 @@ run: nebula.iso
 
 clean: 
 	-@(RM) $(wildcard $(OBJFILES) $(BUILD_DIR) nebula.bin)
+
+todo:
+	-@for file in $(ALLFILES:Makefile=); do fgrep -H -e TODO -e FIXME $$file; done; true
