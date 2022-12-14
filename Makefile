@@ -24,7 +24,7 @@ CC := $(TARGET)gcc
 AS := nasm
 
 
-.PHONY: all clean run todo
+.PHONY: all clean run 
 
 all: nebula.iso
 
@@ -50,6 +50,3 @@ run: nebula.iso
 clean: 
 	rm -rf build/ isodir/boot/nebula.bin nebula.iso
 	$(RM) $(OBJFILES) $(ASMOBJFILES)
-
-todo:
-	$(shell bash todo.sh)
