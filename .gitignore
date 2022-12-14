@@ -1,0 +1,4 @@
+build/
+tools/src/build-gcc
+tools/src/build-binutils
+tools/cross
