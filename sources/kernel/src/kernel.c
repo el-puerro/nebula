@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "../include/vga.h"
+#include "../include/kstring.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -23,6 +24,10 @@ void kernel_main(void)
 	/* Initialize terminal interface */
 	terminal_initialize();
 
-	/* Newline support is left as an exercise. */
+	for(int i = 0; i < 200; i++)
+	{
+		terminal_writestring(itoa(i, 10));
+		terminal_writestring("\n");
+	}
 	terminal_writestring("Hello, kernel World!\n");
 }
