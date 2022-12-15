@@ -75,14 +75,25 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 
 void terminal_scroll() // TODO: fix terminal scrolling
 {
-	for(size_t i = 1; i < VGA_HEIGHT; i++)
+	int i;
+	int lastRow = VGA_HEIGHT - 1;
+
+	u16int spaceChar = m_attribute | 0x20;  // space character
+
+	// Move the current text chunk that makes up the screen back in the buffer by a line
+ 	for ( i = 0; i < VGA_HEIGHT * VGA_WIDTH; i += 1 )
 	{
-		for(size_t j = 0; j < VGA_WIDTH; j++)
-		{
-			const size_t index = i * VGA_WIDTH + j;
-			terminal_buffer[index] = terminal_buffer[index - (size_t) 80];
-		}
+		videoMemory[ i ] = videoMemory[ i + VGA_WIDTH ];
 	}
+
+	// The last line should now be blank. Do this by writing 80 spaces to it
+	for ( i = lastRow * VGA_WIDTH; i < VGA_HEIGHT * VGA_WIDTH; i += 1 )
+	{
+		videoMemory[ i ] = spaceChar;
+	}
+
+	// The cursor should now be on the last line
+	cursorY = lastRow;
 }
 
 void terminal_putchar(char c) 
@@ -94,13 +105,17 @@ void terminal_putchar(char c)
 	}
 	else
 	{
-	    if (++terminal_column == VGA_WIDTH) {
+	    if (++terminal_column == VGA_WIDTH) 
+		{
 	    	terminal_column = 0;
-	    	if (++terminal_row == VGA_HEIGHT)
-			{
-				terminal_scroll();
-			}
+			terminal_row++;
+	    	
 	    }
+		if (++terminal_row >= VGA_HEIGHT)
+		{
+			terminal_scroll();
+			terminal_column = 0;
+		}
 	    terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	}
 }

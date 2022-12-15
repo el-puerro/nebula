@@ -26,8 +26,10 @@ void kernel_main(void)
 
 	for(int i = 0; i < 200; i++)
 	{
+		terminal_setcolor(VGA_COLOR_RED);
 		terminal_writestring(itoa(i, 10));
-		terminal_writestring("\n");
+		terminal_setcolor(VGA_COLOR_WHITE);
+		terminal_writestring("abcdefghijklmnopqrstuvwxyz");
 	}
 	terminal_writestring("Hello, kernel World!\n");
 }
