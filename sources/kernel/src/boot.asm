@@ -40,6 +40,8 @@ stack_top:
 ; Declare _start as a function symbol with the given symbol size.
 section .text
 global _start:function (_start.end - _start)
+extern gdt_init
+
 _start:
 	; The bootloader has loaded us into 32-bit protected mode on a x86
 	; machine. Interrupts are disabled. Paging is disabled. The processor
@@ -66,7 +68,9 @@ _start:
 	; C++ features such as global constructors and exceptions will require
 	; runtime support to work as well.
 
-	; TODO: GDT
+	; TODO: test GDT init
+	call gdt_init
+
 	; TODO: Paging
 
 

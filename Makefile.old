@@ -23,14 +23,30 @@ INCLUDE := -I$(INC_DIR)
 CC := $(TARGET)gcc
 AS := nasm
 
-%.c.o: %.c
-	$(CC) $(INCLUDE) -c $^ -o $@
 
-%.asm.o: %.asm
-	$(AS) $(ASFLAGS) $^ -o $@
+.PHONY: all clean run 
 
-$(ISO_DIR)/boot/nebula.bin: %.c.o %.asm.o
+all: nebula.iso
+
+nebula.iso: nebula.bin
+	grub-mkrescue -o $@ isodir
+
+nebula.bin: cbuild asmbuild #$(OBJFILES)
 	$(CC) -T $(LD_FILE) -o $(ISO_DIR)/boot/nebula.bin $(OBJFILES) $(ASMOBJFILES) $(LDFLAGS) 
 
-nebula.iso: $(ISO_DIR)/boot/nebula.bin
-	grub-mkrescue -o $@ isodir
+#$(OBJFILES): $(C_FILES)
+#%.o: %.c
+cbuild: 
+	$(foreach file,$(OBJFILES),$(CC) $(INCLUDE) -c $(C_FILES) -o $(OBJFILES) $(CFLAGS) 
+
+#$(ASMOBJFILES): $(ASM_FILES)
+#%.o: %.asm
+asmbuild:
+	$(AS) $(ASFLAGS) $(ASM_FILES) -o $(ASMOBJFILES)
+
+run: nebula.iso
+	qemu-system-i386 -cdrom nebula.iso
+
+clean: 
+	rm -rf build/ isodir/boot/nebula.bin nebula.iso
+	$(RM) $(OBJFILES) $(ASMOBJFILES)
