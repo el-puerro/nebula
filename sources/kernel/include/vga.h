@@ -52,7 +52,7 @@ void terminal_initialize(void)
 {
 	terminal_row = 0;
 	terminal_column = 0;
-	terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+	terminal_color = vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
 	terminal_buffer = (uint16_t*) 0xB8000;
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
 		for (size_t x = 0; x < VGA_WIDTH; x++) {
@@ -73,50 +73,56 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
-void terminal_scroll() // TODO: fix terminal scrolling
+void terminal_scroll() 
 {
-	int i;
-	int lastRow = VGA_HEIGHT - 1;
-
-	u16int spaceChar = m_attribute | 0x20;  // space character
-
-	// Move the current text chunk that makes up the screen back in the buffer by a line
- 	for ( i = 0; i < VGA_HEIGHT * VGA_WIDTH; i += 1 )
+	for(size_t row = 1; row < VGA_HEIGHT; row++)
 	{
-		videoMemory[ i ] = videoMemory[ i + VGA_WIDTH ];
-	}
+		for(size_t col = 0; col < VGA_WIDTH; col++)
+		{
+			size_t index = row * VGA_WIDTH + col;
+			size_t tmp = row - 1;
+			size_t lastrow = tmp * VGA_WIDTH + col;
+			terminal_buffer[lastrow] = terminal_buffer[index];
+		}
+	}	
 
-	// The last line should now be blank. Do this by writing 80 spaces to it
-	for ( i = lastRow * VGA_WIDTH; i < VGA_HEIGHT * VGA_WIDTH; i += 1 )
+	for(size_t col = 0; col < VGA_WIDTH; col++)
+    {
+    	terminal_buffer[terminal_row * VGA_WIDTH + col] = vga_entry(' ', terminal_color);
+		terminal_buffer[(terminal_row - 1) * VGA_WIDTH + col] = vga_entry(' ', terminal_color);
+    }
+	//terminal_column = 0;
+}
+
+void newline()
+{
+	if(++terminal_row == VGA_HEIGHT)
 	{
-		videoMemory[ i ] = spaceChar;
+		terminal_scroll();
+		terminal_column = 0;
+		terminal_row--;
 	}
-
-	// The cursor should now be on the last line
-	cursorY = lastRow;
+	else
+	{
+		terminal_column = 0;
+		terminal_row++;
+	}
 }
 
 void terminal_putchar(char c) 
 {
 	if(c == '\n')
 	{
-		terminal_row++;
-		terminal_column = 0;
+		newline();
+	}
+	else if(++terminal_column == VGA_WIDTH) 
+	{
+		newline();
+		terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	}
 	else
 	{
-	    if (++terminal_column == VGA_WIDTH) 
-		{
-	    	terminal_column = 0;
-			terminal_row++;
-	    	
-	    }
-		if (++terminal_row >= VGA_HEIGHT)
-		{
-			terminal_scroll();
-			terminal_column = 0;
-		}
-	    terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
+		terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
 	}
 }
 
