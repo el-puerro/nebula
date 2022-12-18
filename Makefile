@@ -1,36 +1,9 @@
-TARGET := $(shell pwd)/tools/cross/bin/i686-elf-
-
-SRC_DIR := $(shell pwd)/sources/kernel/src
-INC_DIR := $(shell pwd)/sources/kernel/include
-PROJDIRS := $(SRC_DIR) $(INC_DIR)
-BUILD_DIR := $(shell pwd)/build
-ISO_DIR := $(shell pwd)/isodir
-
-C_FILES := $(shell find $(SRC_DIR) -type f -name "*.c")
-HDR_FILES := $(shell find $(SRC_DIR) -type f -name "*.h")
-ASM_FILES := $(shell find $(SRC_DIR) -type f -name "*.asm")
-LD_FILE := $(SRC_DIR)/linker.ld #$(shell find $(SRC_DIR) -type f -name "\*.ld")
-SRC_FILES := $(C_FILES) $(ASM_FILES)
-OBJFILES := $(patsubst %.c,%.o,$(C_FILES))
-ASMOBJFILES := $(patsubst %.asm,%.o,$(ASM_FILES))
-ALLFILES := $(C_FILES) $(HDR_FILES) $(ASM_FILES) $(LD_FILE)
-
-CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-LDFLAGS := -ffreestanding -O2 -nostdlib -lgcc
-ASFLAGS := -felf32
-INCLUDE := -I$(INC_DIR)
-
+TARGET := tools/cross/bin/i686-elf-
 CC := $(TARGET)gcc
 AS := nasm
 
-%.c.o: %.c
-	$(CC) $(INCLUDE) -c $^ -o $@
+SRC_DIR := sources/kernel/src 
+INCLUDE_DIR := sources/kernel/include 
 
-%.asm.o: %.asm
-	$(AS) $(ASFLAGS) $^ -o $@
+LDFILE := sources/kernel/src/linker.ld
 
-$(ISO_DIR)/boot/nebula.bin: %.c.o %.asm.o
-	$(CC) -T $(LD_FILE) -o $(ISO_DIR)/boot/nebula.bin $(OBJFILES) $(ASMOBJFILES) $(LDFLAGS) 
-
-nebula.iso: $(ISO_DIR)/boot/nebula.bin
-	grub-mkrescue -o $@ isodir
