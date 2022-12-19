@@ -17,7 +17,7 @@ uint32_t *create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
     d |= limit & 0x0000FFFF;           // limit bits 15:0
 
     // return a pointer to the descriptor
-    uint32_t *desc = &d;//(&d << 32);
+    uint32_t *desc = (uint32_t*)&d; //(uint32_t*)(&d << 32);
     return desc;
 }
 
