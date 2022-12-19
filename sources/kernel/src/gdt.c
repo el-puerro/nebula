@@ -3,7 +3,7 @@
 //extern LOAD_GDT(limit, base);
 uint32_t *create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
 {
-    uint64_t d;
+    uint64_t d = 0;
     // create the high 32bit segment
     d = limit & 0x000F0000;             // limit bits 19:16
     d |= (flag << 8) & 0x00F0FF00;      // set type, p, dpl, s, g, d/b, l, avl
