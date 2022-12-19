@@ -11,7 +11,7 @@ void get_memmap(multiboot_info_t* mbd, uint32_t magic)
     {
         if(mbd->flags >> 6&0x61)
         {
-            multiboot_info = mbd;
+            multiboot_info_t* multiboot_info = mbd;
         }
     }
 }
@@ -23,13 +23,13 @@ void memmap_init_lists()
         mmap_entry_t* entry = (mmap_entry_t*)(multiboot_info->mmap_addr + i);
         if(entry->type == MULTIBOOT_MEMORY_AVAILABLE)
         {
-            pmem_list_free[pmem_index_free] = entry;
+            mmap_entry_t* pmem_list_free[pmem_index_free] = entry;
             pmem_index_free++;
         }
 
         else if(entry->type == MULTIBOOT_MEMORY_RESERVED)
         {
-            pmem_list_reserved[pmem_index_reserved] = entry;
+            mmap_entry_t* pmem_list_reserved[pmem_index_reserved] = entry;
         }
     }
 }
