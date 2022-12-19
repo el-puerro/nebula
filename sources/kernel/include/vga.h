@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stddef.h>
+#include <stdint.h>
+
 // Copied from kernel.c on Dec 14 2022
 
 /* Hardware text mode color constants. */

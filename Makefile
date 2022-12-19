@@ -1,52 +1,52 @@
-TARGET := $(shell pwd)/tools/cross/bin/i686-elf-
+# Makefile for building nebula
+#
+# Hopefully, I barely have to touch this abomination again
 
-SRC_DIR := $(shell pwd)/sources/kernel/src
-INC_DIR := $(shell pwd)/sources/kernel/include
-PROJDIRS := $(SRC_DIR) $(INC_DIR)
-BUILD_DIR := $(shell pwd)/build
-ISO_DIR := $(shell pwd)/isodir
-
-C_FILES := $(shell find $(SRC_DIR) -type f -name "*.c")
-HDR_FILES := $(shell find $(SRC_DIR) -type f -name "*.h")
-ASM_FILES := $(shell find $(SRC_DIR) -type f -name "*.asm")
-LD_FILE := $(SRC_DIR)/linker.ld #$(shell find $(SRC_DIR) -type f -name "\*.ld")
-SRC_FILES := $(C_FILES) $(ASM_FILES)
-OBJFILES := $(patsubst %.c,%.o,$(C_FILES))
-ASMOBJFILES := $(patsubst %.asm,%.o,$(ASM_FILES))
-ALLFILES := $(C_FILES) $(HDR_FILES) $(ASM_FILES) $(LD_FILE)
-
-CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
-LDFLAGS := -ffreestanding -O2 -nostdlib -lgcc
-ASFLAGS := -felf32
-INCLUDE := -I$(INC_DIR)
-
+TARGET := tools/cross/bin/i686-elf-
 CC := $(TARGET)gcc
 AS := nasm
 
+CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+LDFLAGS := -ffreestanding -O2 -nostdlib -lgcc
+ASMFLAGS := -felf32
+SRC_DIR := sources/kernel/src 
+CFILES := $(shell find $(SRC_DIR) -type f -name "*.c") #$(wildcard $(SRC_DIR)/*.c)
+ASMFILES := $(shell find $(SRC_DIR) -type f -name "*.asm") #$(wildcard $(SRC_DIR)/*.asm)
+SRC := $(CFILES) $(ASMFILES)
 
-.PHONY: all clean run 
+COBJS:= $(CFILES:.c=.o)
+ASMOBJS := $(ASMFILES:.asm=.o)
+OBJFILES = $(COBJS) $(ASMOBJS)
 
-all: nebula.iso
+INCLUDE_DIR := sources/kernel/include 
 
-nebula.iso: nebula.bin
-	grub-mkrescue -o $@ isodir
+LDFILE := sources/kernel/src/linker.ld
 
-nebula.bin: cbuild asmbuild #$(OBJFILES)
-	$(CC) -T $(LD_FILE) -o $(ISO_DIR)/boot/nebula.bin $(OBJFILES) $(ASMOBJFILES) $(LDFLAGS) 
+.PHONY: iso clean run
+iso: $(OBJFILES)
+	$(CC) -T $(LDFILE) -o isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
+	grub-mkrescue -o nebula.iso isodir
 
-#$(OBJFILES): $(C_FILES)
-#%.o: %.c
-cbuild: 
-	$(CC) $(INCLUDE) -c $(C_FILES) -o $(OBJFILES) $(CFLAGS) 
+#binary: $(OBJFILES)
+#		$(CC) -T isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
 
-#$(ASMOBJFILES): $(ASM_FILES)
-#%.o: %.asm
-asmbuild:
-	$(AS) $(ASFLAGS) $(ASM_FILES) -o $(ASMOBJFILES)
+%.o: %.c
+	$(CC) -c $< -o $@ -I$(INCLUDE_DIR) $(CFLAGS) 
 
-run: nebula.iso
-	qemu-system-i386 -cdrom nebula.iso
+%.o: %.asm
+	$(AS) $(ASMFLAGS) $< -o $@
+
+
+#c-sources: $(CFILES)
+#		$(foreach cfile, $(CFILES), @$(CC) -I$(INCLUDE_DIR) -c $(cfile) -o $(patsubst %.c,%.o,$(cfile) $(CFLAGS)))
+	
+#asm-sources: $(ASMFILES)
+#		$(foreach asmfile, $(ASFILES), @$(AS) $(ASFLAGS) $(asmfile) -o $(patsubst %.asm,%.o,$(asmfile)))
+
 
 clean: 
-	rm -rf build/ isodir/boot/nebula.bin nebula.iso
-	$(RM) $(OBJFILES) $(ASMOBJFILES)
+	rm -rf isodir/boot/nebula.bin $(OBJFILES) nebula.iso
+
+run:
+	qemu-system-i386 -cdrom nebula.iso
+
