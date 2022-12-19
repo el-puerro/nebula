@@ -31,7 +31,7 @@ iso: $(OBJFILES)
 #		$(CC) -T isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
 
 %.o: %.c
-	$(CC) -I$(INCLUDE_DIR) -c $< -o $@ $(CLFAGS)
+	$(CC) -c $< -o $@ $(CLFAGS) -I$(INCLUDE_DIR)
 
 %.o: %.asm
 	$(AS) $(ASFLAGS) $< -o $@
