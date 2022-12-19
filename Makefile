@@ -22,7 +22,7 @@ INCLUDE_DIR := sources/kernel/include
 
 LDFILE := sources/kernel/src/linker.ld
 
-.PHONY: iso clean
+.PHONY: iso clean run
 iso: $(OBJFILES)
 	$(CC) -T $(LDFILE) -o isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
 	grub-mkrescue -o nebula.iso isodir
@@ -47,4 +47,6 @@ iso: $(OBJFILES)
 clean: 
 	rm -rf isodir/boot/nebula.bin $(OBJFILES) nebula.iso
 
+run:
+	qemu-system-i386 -cdrom nebula.iso
 
