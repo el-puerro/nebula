@@ -14,9 +14,9 @@ CFILES := $(wildcard $(SRC_DIR)/*.c)
 ASMFILES := $(wildcard $(SRC_DIR)/*.asm)
 SRC := $(CFILES) $(ASMFILES)
 
-COBJS:= $(patsubst *.c,*.o,$(CFILES))
-ASMOBJS := $(patsubst *.asm,*.o,$(ASMFILES))
-OBJFILES := $(COBJS) $(ASMOBJS)
+COBJS:= $(patsubst %.c,%.o,$(CFILES))
+ASMOBJS := $(patsubst %.asm,%.o,$(ASMFILES))
+OBJFILES := $(wildcard $(SRC_DIR/*.o))
 
 INCLUDE_DIR := sources/kernel/include 
 
@@ -28,14 +28,14 @@ LDFILE := sources/kernel/src/linker.ld
 iso: binary
 		grub-mkrescure -o nebula.iso isodir
 
-binary: c-soruces asm-sources
+binary: c-sources asm-sources
 		$(CC) -T isodir/boot/nebula.bin $(COBJS) $(ASMOBJS) $(LDFLAGS)
 
 c-sources: $(CFILES)
-		$(foreach cfile, $(CFILES), $(CC) -I$(INCLUDE_DIR) -c $(cfile) -o $(patsubst *.c,*.o,$(cfile) $(CFLAGS)))
+		$(foreach cfile, $(CFILES), $(CC) -I$(INCLUDE_DIR) -c $(cfile) -o $(patsubst %.c,%.o,$(cfile) $(CFLAGS)))
 	
 asm-sources: $(ASMFILES)
-		$(foreach asmfile, $(ASFILES), $(AS) $(ASFLAGS) $(asmfile) -o $(patsubst *.asm,*.o,$(asmfile)))
+		$(foreach asmfile, $(ASFILES), $(AS) $(ASFLAGS) $(asmfile) -o $(patsubst %.asm,%.o,$(asmfile)))
 
 
 clean: 
