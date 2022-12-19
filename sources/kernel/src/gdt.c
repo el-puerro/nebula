@@ -1,5 +1,6 @@
 #include "../include/gdt.h"
 
+//extern LOAD_GDT(limit, base);
 uint32_t *create_descriptor(uint32_t base, uint32_t limit, uint16_t flag)
 {
     uint64_t d;

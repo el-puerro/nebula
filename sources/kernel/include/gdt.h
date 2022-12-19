@@ -46,5 +46,6 @@
                      SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
                      SEG_PRIV(3)     | SEG_DATA_RDWR
 
+uint32_t *create_descriptor(uint32_t base, uint32_t limit, uint16_t flag);
 extern LOAD_GDT(limit, base);
 void gdt_init();

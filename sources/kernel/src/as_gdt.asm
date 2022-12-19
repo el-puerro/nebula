@@ -1,4 +1,5 @@
 section .text
+global LOAD_GDT
 
 gdtr dw 0 ; For storing the limit parameter 
      dd 0 ; For storing the base parameter
