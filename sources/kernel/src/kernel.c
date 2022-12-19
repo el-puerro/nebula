@@ -6,6 +6,7 @@
 
 #include "../include/vga.h"
 #include "../include/kstring.h"
+#include "../include/mem.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -31,6 +32,20 @@ void kernel_main(void)
 		terminal_writestring(itoa(i, 10));
 		terminal_putchar('\n');
 	}
+	
+	terminal_setcolor(VGA_COLOR_GREEN);
+	for(int i = 0; i < pmem_index_free; i++)
+	{
+		terminal_writestring("Addr: ");
+		terminal_writestring(itoa(pmem_list_free[i]->addr, 16));
+		terminal_writestring(", size: ");
+		terminal_writestring(itoa(pmem_list_free[i]->size, 10));
+		terminal_writestring("\n");
+	}
+	terminal_writestring("\n\n\n");
 	terminal_setcolor(VGA_COLOR_WHITE);
-	terminal_writestring("Nebula, with termscroll!");
+	terminal_writestring("Nebula, with memory detection!");
+
+	
+
 }

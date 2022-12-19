@@ -41,6 +41,7 @@ stack_top:
 section .text
 global _start:function (_start.end - _start)
 extern gdt_init
+extern get_memmap
 
 _start:
 	; The bootloader has loaded us into 32-bit protected mode on a x86
@@ -59,6 +60,13 @@ _start:
 	; in assembly as languages such as C cannot function without a stack.
 	mov esp, stack_top
 
+	; Obtain memory map
+	push eax ; grub nicely left the magic multiboot header number here 
+	push ebx
+
+	call get_memmap
+
+	
 	; This is a good place to initialize crucial processor state before the
 	; high-level kernel is entered. It's best to minimize the early
 	; environment where crucial features are offline. Note that the
