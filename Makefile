@@ -24,17 +24,17 @@ LDFILE := sources/kernel/src/linker.ld
 
 .PHONY: iso clean
 iso: $(OBJFILES)
-	$(CC) -T isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
+	$(CC) -T $(LDFILE) -o isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
 	grub-mkrescure -o nebula.iso isodir
 
 #binary: $(OBJFILES)
 #		$(CC) -T isodir/boot/nebula.bin $(OBJFILES) $(LDFLAGS)
 
 %.o: %.c
-	$(CC) -c $< -o $@ $(CLFAGS) -I$(INCLUDE_DIR)
+	$(CC) -c $< -o $@ -I$(INCLUDE_DIR) $(CFLAGS) 
 
 %.o: %.asm
-	$(AS) $(ASFLAGS) $< -o $@
+	$(AS) $(ASMFLAGS) $< -o $@
 
 
 #c-sources: $(CFILES)
