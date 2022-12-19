@@ -1,6 +1,4 @@
-#include "../include/multiboot.h"
 #include "../include/mem.h"
-
 
 /** 
  * @brief we only get the memory map from grub if we take it immediately

@@ -1,4 +1,5 @@
 #pragma once 
+#include "../include/multiboot.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -14,3 +15,4 @@ mmap_entry_t* pmem_list_free[20];
 mmap_entry_t* pmem_list_reserved[20];
 
 void get_memmap(multiboot_info_t* mbd, uint32_t magic);
+void memmap_init_lists();
