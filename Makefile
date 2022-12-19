@@ -10,8 +10,8 @@ CFLAGS := -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 LDFLAGS := -ffreestanding -O2 -nostdlib -lgcc
 ASMFLAGS := -felf32
 SRC_DIR := sources/kernel/src 
-CFILES := $(wildcard $(SRC_DIR)/*.c)
-ASMFILES := $(wildcard $(SRC_DIR)/*.asm)
+CFILES := $(shell find $(SRC_DIR) -type f -name "*.c") #$(wildcard $(SRC_DIR)/*.c)
+ASMFILES := $(shell find $(SRC_DIR) -type f -name "*.asm") #$(wildcard $(SRC_DIR)/*.asm)
 SRC := $(CFILES) $(ASMFILES)
 
 COBJS:= $(patsubst %.c,%.o,$(CFILES))
