@@ -47,5 +47,5 @@
                      SEG_PRIV(3)     | SEG_DATA_RDWR
 
 uint32_t *create_descriptor(uint32_t base, uint32_t limit, uint16_t flag);
-extern LOAD_GDT(limit, base);
+extern void LOAD_GDT(uint16_t limit, uint32_t base);
 void gdt_init();

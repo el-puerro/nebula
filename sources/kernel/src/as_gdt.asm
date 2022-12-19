@@ -1,8 +1,8 @@
 section .text
 global LOAD_GDT
 
-gdtr dw 0 ; For storing the limit parameter 
-     dd 0 ; For storing the base parameter
+gdtr dw 0 ; For storing the limit parameter (uint16_t) 
+     dd 0 ; For storing the base parameter (uint32_t)
 
 LOAD_GDT:
     mov ax, [esp + 4] ; get the limit parameter from the stack
