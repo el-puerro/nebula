@@ -18,9 +18,6 @@ void get_memmap(multiboot_info_t* mbd, uint32_t magic)
 
 void memmap_init_lists()
 {
-    pmem_index_free = 0;
-    pmem_index_reserved = 0;
-
     for(int i = 0; i < multiboot_info->mmap_length; i += sizeof(mmap_entry_t))
     {
         mmap_entry_t* entry = (mmap_entry_t*)(multiboot_info->mmap_addr + i);
@@ -35,3 +32,4 @@ void memmap_init_lists()
             pmem_list_reserved[pmem_index_reserved] = entry;
         }
     }
+}

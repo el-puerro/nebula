@@ -8,8 +8,8 @@ typedef multiboot_memory_map_t mmap_entry_t;
 
 multiboot_info_t* multiboot_info;
 
-int pmem_index_free;
-int pmem_index_reserved;
+int pmem_index_free = 0;
+int pmem_index_reserved = 0;
 
 mmap_entry_t* pmem_list_free[20];
 mmap_entry_t* pmem_list_reserved[20];

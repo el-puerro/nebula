@@ -32,7 +32,7 @@ void kernel_main(void)
 		terminal_writestring(itoa(i, 10));
 		terminal_putchar('\n');
 	}
-	
+
 	terminal_setcolor(VGA_COLOR_GREEN);
 	for(int i = 0; i < pmem_index_free; i++)
 	{
