@@ -27,7 +27,7 @@ jobs:
 
       # install dependencies neccessary for the cross-compiler build
       - name: install dependencies
-        run: sudo apt install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
+        run: sudo apt install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo nasm
 
       # Runs a set of commands using the runners shell
       - name: build cross-compiler
