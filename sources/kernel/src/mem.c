@@ -1,7 +1,6 @@
 #include "../include/mem.h"
 
 // Global variables
-// TODO: Fix global variable declaration issue
 multiboot_info_t* multiboot_info;
 
 int pmem_index_free;
