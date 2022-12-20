@@ -60,7 +60,7 @@ void kernel_main(void)
 
 	terminal_writestring("\n\n\n");
 	terminal_setcolor(VGA_COLOR_WHITE);
-	terminal_writestring("Nebula, with memory detection!");
+	terminal_writestring("Nebula, with memory detection (and interrupts)!");
 
 	
 

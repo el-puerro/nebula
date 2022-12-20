@@ -42,6 +42,7 @@ section .text
 global _start:function (_start.end - _start)
 extern gdt_init
 extern get_memmap
+extern idt_init
 
 _start:
 	; The bootloader has loaded us into 32-bit protected mode on a x86
@@ -77,6 +78,7 @@ _start:
 	; runtime support to work as well.
 
 	call gdt_init
+	call idt_init
 
 	; TODO: Paging
 
