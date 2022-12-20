@@ -48,5 +48,5 @@ clean:
 	rm -rf isodir/boot/nebula.bin $(OBJFILES) nebula.iso
 
 run:
-	qemu-system-i386 -cdrom nebula.iso
+	qemu-system-i386 -cdrom nebula.iso -m 4G
 

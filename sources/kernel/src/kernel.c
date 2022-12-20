@@ -32,6 +32,8 @@ void kernel_main(void)
 		terminal_writestring(itoa(i, 10));
 		terminal_putchar('\n');
 	}
+	terminal_setcolor(VGA_COLOR_WHITE);
+	terminal_writestring("Nebula, with terminal scrolling!\n");
 
 	memmap_init_lists();
 
@@ -42,8 +44,20 @@ void kernel_main(void)
 		terminal_writestring(itoa(pmem_list_free[i]->addr, 16));
 		terminal_writestring(", size: ");
 		terminal_writestring(itoa(pmem_list_free[i]->size, 10));
-		terminal_writestring("\n");
+		terminal_writestring(" bytes free\n");
 	}
+
+	terminal_writestring("\n\n");
+	terminal_setcolor(VGA_COLOR_CYAN);
+	for(int i = 0; i < pmem_index_reserved; i++)
+	{
+		terminal_writestring("Addr: ");
+		terminal_writestring(itoa(pmem_list_reserved[i]->addr, 16));
+		terminal_writestring(", size: ");
+		terminal_writestring(itoa(pmem_list_reserved[i]->size, 10));
+		terminal_writestring(" bytes reserved\n");
+	}
+
 	terminal_writestring("\n\n\n");
 	terminal_setcolor(VGA_COLOR_WHITE);
 	terminal_writestring("Nebula, with memory detection!");
