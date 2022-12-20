@@ -33,6 +33,8 @@ void kernel_main(void)
 		terminal_putchar('\n');
 	}
 
+	memmap_init_lists();
+
 	terminal_setcolor(VGA_COLOR_GREEN);
 	for(int i = 0; i < pmem_index_free; i++)
 	{

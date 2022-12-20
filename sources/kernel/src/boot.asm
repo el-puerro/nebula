@@ -7,23 +7,6 @@ MBFLAGS  equ  MBALIGN | MEMINFO ; this is the Multiboot 'flag' field
 MAGIC    equ  0x1BADB002        ; 'magic number' lets bootloader find the header
 CHECKSUM equ -(MAGIC + MBFLAGS)   ; checksum of above, to prove we are multiboot
 
-; virtual base address of the kernelspace. Must be used to convert virtual to 
-; physical until actual paging is enabled. Note that this is not the virtual 
-; address where the kernel image itself is loaded, just the amount that must be
-; subtracted from the virtual address to get the physical one
-
-KERNEL_VIRTUAL_BASE equ 0xC0000000                  ; 3GB
-KERNEL_PAGE_NUMBER  equ (KERNEL_VIRTUAL_BASE >> 22) ; Page directory index
-
-
-section .data
-align 0x1000
-bootPageDirectory:
-    dd 0x00000083
-    times (KERNEL_PAGE_NUMBER - 1) dd 0         ; Pages before kernelspace 
-    dd 0x00000083
-    times (1024 - KERNEL_PAGE_NUMBER - 1) dd 0  ; pages after kernel image
-
 ; Declare a multiboot header that marks the program as a kernel. These are magic
 ; values that are documented in the multiboot standard. The bootloader will
 ; search for this signature in the first 8 KiB of the kernel file, aligned at a
@@ -56,31 +39,9 @@ stack_top:
 ; doesn't make sense to return from this function as the bootloader is gone.
 ; Declare _start as a function symbol with the given symbol size.
 section .text
-
-loader equ(_loader - 0xC0000000)
-global loader
 global _start:function (_start.end - _start)
 extern gdt_init
 extern get_memmap
-
-_loader:
-    ; until paging has been set up, the code must be position-independent and use
-    ; physical instead of virtual addresses
-    mov ecx, (bootPageDirectory - KERNEL_VIRTUAL_BASE)
-    mov cr3, ecx                    ; load page directory base reg
-
-    mov ecx, cr4 
-    or ecx, 0x00000010              ; set PSE bit in CR4 to enable 4mb pages
-    mov cr4, ecx
-
-    mov ecx, cr0
-    or ecx, 0x80000000              ; set PG bit in CR0 to enable paging
-    mov cr0, ecx
-
-    lea ecx, [_start]               ; load correct virtual address of the kernel 
-                                    ; entry to do a long jump and fetch the next
-                                    ; instruction
-    jmp ecx
 
 _start:
 	; The bootloader has loaded us into 32-bit protected mode on a x86
@@ -94,21 +55,18 @@ _start:
 	; itself. It has absolute and complete power over the
 	; machine.
 
-    ; Unmap identity-mapped first 4mb of physical addresses, since it shouldnt 
-    ; be needed anymore: 
-    mov dword [bootPageDirectory], 0
-    invlpg [0]
-
 	; To set up a stack, we set the esp register to point to the top of our
 	; stack (as it grows downwards on x86 systems). This is necessarily done
 	; in assembly as languages such as C cannot function without a stack.
 	mov esp, stack_top
+
 	; Obtain memory map
 	push eax ; grub nicely left the magic multiboot header number here 
 	push ebx
 
 	call get_memmap
 
+	
 	; This is a good place to initialize crucial processor state before the
 	; high-level kernel is entered. It's best to minimize the early
 	; environment where crucial features are offline. Note that the
@@ -121,6 +79,7 @@ _start:
 	call gdt_init
 
 	; TODO: Paging
+
 
 	; Enter the high-level kernel. The ABI requires the stack is 16-byte
 	; aligned at the time of the call instruction (which afterwards pushes
