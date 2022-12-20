@@ -6,7 +6,13 @@
 #include <stddef.h>
 
 char* itoa(int val, int base){
-	
+
+	// fix missing 0 issue
+	if(val == 0)
+	{
+		return "0";
+	}
+
 	static char buf[32] = {0};
 	
 	int i = 30;

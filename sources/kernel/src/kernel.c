@@ -6,15 +6,16 @@
 
 #include "../include/vga.h"
 #include "../include/kstring.h"
+#include "../include/mem.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
-#error "You are not using a cross-compiler, you will most certainly run into trouble"
+#error "A cross compiler is required to compile nebula"
 #endif
 
 /* This tutorial will only work for the 32-bit ix86 targets. */
 #if!defined(__i386__)
-#error "This tutorial needs to be compiled with a ix86-elf compiler"
+#error "A ix86-elf cross compiler is required to compile nebula"
 #endif
 
 
@@ -32,5 +33,35 @@ void kernel_main(void)
 		terminal_putchar('\n');
 	}
 	terminal_setcolor(VGA_COLOR_WHITE);
-	terminal_writestring("Nebula, with termscroll!");
+	terminal_writestring("Nebula, with terminal scrolling!\n");
+
+	memmap_init_lists();
+
+	terminal_setcolor(VGA_COLOR_GREEN);
+	for(int i = 0; i < pmem_index_free; i++)
+	{
+		terminal_writestring("Addr: ");
+		terminal_writestring(itoa(pmem_list_free[i]->addr, 16));
+		terminal_writestring(", size: ");
+		terminal_writestring(itoa(pmem_list_free[i]->size, 10));
+		terminal_writestring(" bytes free\n");
+	}
+
+	terminal_writestring("\n\n");
+	terminal_setcolor(VGA_COLOR_CYAN);
+	for(int i = 0; i < pmem_index_reserved; i++)
+	{
+		terminal_writestring("Addr: ");
+		terminal_writestring(itoa(pmem_list_reserved[i]->addr, 16));
+		terminal_writestring(", size: ");
+		terminal_writestring(itoa(pmem_list_reserved[i]->size, 10));
+		terminal_writestring(" bytes reserved\n");
+	}
+
+	terminal_writestring("\n\n\n");
+	terminal_setcolor(VGA_COLOR_WHITE);
+	terminal_writestring("Nebula, with memory detection!");
+
+	
+
 }
