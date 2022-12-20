@@ -23,7 +23,7 @@ static idtr_t idtr;
 
 // IDT is an array of IDT-Entries; aligned for performance
 __attribute__((aligned(0x10))) static idt_entry_t idt[256]; 
-bool vectors[256] = {false};
+static bool vectors[256] = {false};
 
 __attribute__((noreturn)) void exception_handler(void);
 void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags);

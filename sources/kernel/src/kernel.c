@@ -7,6 +7,7 @@
 #include "../include/vga.h"
 #include "../include/kstring.h"
 #include "../include/mem.h"
+#include "../include/interrupt.h"
 
 /* Check if the compiler thinks you are targeting the wrong operating system. */
 #if defined(__linux__)
@@ -60,8 +61,7 @@ void kernel_main(void)
 
 	terminal_writestring("\n\n\n");
 	terminal_setcolor(VGA_COLOR_WHITE);
-	terminal_writestring("Nebula, with memory detection (and interrupts)!");
-
-	
-
+	terminal_writestring("Nebula, with memory detection!");
+	idt_init();
+	terminal_writestring("And now with interrupts"); //TODO: Fix interrupts
 }
